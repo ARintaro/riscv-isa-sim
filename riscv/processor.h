@@ -371,6 +371,9 @@ public:
 
   vectorUnit_t VU;
   triggers::module_t TM;
+
+  insn_t diff_last_insn;
+  reg_t diff_last_pc;
 };
 
 #endif

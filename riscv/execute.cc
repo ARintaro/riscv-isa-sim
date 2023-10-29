@@ -282,6 +282,10 @@ void processor_t::step(size_t n)
           insn_fetch_t fetch = mmu->load_insn(pc);
           if (debug && !state.serialized)
             disasm(fetch.insn);
+            
+          diff_last_insn = fetch.insn;
+          diff_last_pc = pc;
+
           pc = execute_insn_logged(this, pc, fetch);
           advance_pc();
         }
@@ -291,6 +295,10 @@ void processor_t::step(size_t n)
         // Main simulation loop, fast path.
         for (auto ic_entry = _mmu->access_icache(pc); ; ) {
           auto fetch = ic_entry->data;
+          
+          diff_last_insn = fetch.insn;
+          diff_last_pc = pc;
+          
           pc = execute_insn_fast(this, pc, fetch);
           ic_entry = ic_entry->next;
           if (unlikely(ic_entry->tag != pc))
