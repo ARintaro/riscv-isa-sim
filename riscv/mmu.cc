@@ -518,7 +518,8 @@ reg_t mmu_t::walk(mem_access_info_t access_info)
     } else if ((pte & PTE_PBMT) == PTE_PBMT) {
       break;
     } else if (PTE_TABLE(pte)) { // next level of page table
-      if (pte & (PTE_D | PTE_A | PTE_U | PTE_N | PTE_PBMT))
+      // fprintf(stderr, "walk enter 5\n"); 
+      if (pte & (PTE_D | PTE_A ))
         break;
       base = ppn << PGSHIFT;
     } else if ((pte & PTE_U) ? s_mode && (type == FETCH || !sum) : !s_mode) {
@@ -540,7 +541,7 @@ reg_t mmu_t::walk(mem_access_info_t access_info)
           pte_store(pte_paddr, pte | ad, addr, virt, type, vm.ptesize);
         } else {
           // take exception if access or possibly dirty bit is not set.
-          break;
+          // break;
         }
       }
 
