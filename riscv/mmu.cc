@@ -424,8 +424,8 @@ reg_t mmu_t::s2xlate(reg_t gva, reg_t gpa, access_type type, access_type trap_ty
       } else if ((pte & PTE_PBMT) == PTE_PBMT) {
         break;
       } else if (PTE_TABLE(pte)) { // next level of page table
-        if (pte & (PTE_D | PTE_A | PTE_U | PTE_N | PTE_PBMT))
-          break;
+        // if (pte & (PTE_D | PTE_A | PTE_U | PTE_N | PTE_PBMT))
+        //   break;
         base = ppn << PGSHIFT;
       } else if (!(pte & PTE_V) || (!(pte & PTE_R) && (pte & PTE_W))) {
         break;
@@ -446,7 +446,7 @@ reg_t mmu_t::s2xlate(reg_t gva, reg_t gpa, access_type type, access_type trap_ty
             pte_store(pte_paddr, pte | ad, gva, virt, type, vm.ptesize);
           } else {
             // take exception if access or possibly dirty bit is not set.
-            break;
+            // break;
           }
         }
 
@@ -509,6 +509,8 @@ reg_t mmu_t::walk(mem_access_info_t access_info)
     bool pbmte = virt ? (proc->get_state()->henvcfg->read() & HENVCFG_PBMTE) : (proc->get_state()->menvcfg->read() & MENVCFG_PBMTE);
     bool hade = virt ? (proc->get_state()->henvcfg->read() & HENVCFG_ADUE) : (proc->get_state()->menvcfg->read() & MENVCFG_ADUE);
 
+    fprintf(stderr, "[spike] page walk level %d, pte: 0x%08x, ppn: 0x%x", i, pte, ppn);
+
     if (pte & PTE_RSVD) {
       break;
     } else if (!proc->extension_enabled(EXT_SVNAPOT) && (pte & PTE_N)) {
@@ -519,8 +521,8 @@ reg_t mmu_t::walk(mem_access_info_t access_info)
       break;
     } else if (PTE_TABLE(pte)) { // next level of page table
       // fprintf(stderr, "walk enter 5\n"); 
-      if (pte & (PTE_D | PTE_A ))
-        break;
+      // if (pte & (PTE_D | PTE_A ))
+      //   break;
       base = ppn << PGSHIFT;
     } else if ((pte & PTE_U) ? s_mode && (type == FETCH || !sum) : !s_mode) {
       break;
